@@ -1,3 +1,41 @@
+diff --git a/packages/suite-base/src/util/BrowserHttpReader.ts b/packages/suite-base/src/util/BrowserHttpReader.ts
+index 3ecc9448..4c0aa9e1 100644
+--- a/packages/suite-base/src/util/BrowserHttpReader.ts
++++ b/packages/suite-base/src/util/BrowserHttpReader.ts
+@@ -26,6 +26,24 @@ export default class BrowserHttpReader implements FileReader {
+     this.#url = url;
+   }
+ 
++  // Some hosts support ranges but do not expose Accept-Ranges to cross-origin pages
++  // (e.g. raw.githubusercontent.com sends Access-Control-Allow-Origin but no Expose-Headers).
++  // A one-byte range request answered with 206 proves support; the status is always readable.
++  async #rangeProbe(): Promise<boolean> {
++    try {
++      const controller = new AbortController();
++      const res = await fetch(this.#url, {
++        headers: { range: "bytes=0-0" },
++        signal: controller.signal,
++        cache: "no-store",
++      });
++      controller.abort();
++      return res.status === 206;
++    } catch {
++      return false;
++    }
++  }
++
+   public async open(): Promise<{ size: number; identifier?: string }> {
+     let response: Response;
+     try {
+@@ -56,7 +74,7 @@ export default class BrowserHttpReader implements FileReader {
+         `Fetching remote file failed. <${this.#url}> Status code: ${response.status}.`,
+       );
+     }
+-    if (response.headers.get("accept-ranges") !== "bytes") {
++    if (response.headers.get("accept-ranges") !== "bytes" && !(await this.#rangeProbe())) {
+       let errMsg =
+         "Support for HTTP Range requests was not detected on the remote file.\n\nConfirm the resource has an 'Accept-Ranges: bytes' header.";
+ 
 diff --git a/packages/suite-web/src/WebRoot.tsx b/packages/suite-web/src/WebRoot.tsx
 index 8c176d4f..b66472ad 100644
 --- a/packages/suite-web/src/WebRoot.tsx

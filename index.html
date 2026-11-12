@@ -1,8 +1,26 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PS2 demo</title>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PS2 demo — iToF × Stereo RGB</title>
+<style>
+  :root { --bar: 48px; --bg: #15151a; --fg: #e8e8ee; --dim: #9a9aa8; --line: #2a2a33; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif; }
+  header { height: var(--bar); box-sizing: border-box; display: flex; align-items: center; gap: 16px;
+    padding: 0 16px; border-bottom: 1px solid var(--line); }
+  header .logo { display: flex; align-items: center; height: 100%; }
+  header .logo img { height: 22px; width: auto; display: block; }
+  header h1 { margin: 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  header h1 span { color: var(--dim); font-weight: 400; margin-left: 8px; }
+  header nav { margin-left: auto; display: flex; gap: 16px; font-size: 13px; white-space: nowrap; }
+  header nav a { color: var(--dim); text-decoration: none; }
+  header nav a:hover { color: var(--fg); }
+  iframe { display: block; width: 100%; height: calc(100% - var(--bar)); border: 0; }
+  @media (max-width: 640px) { header h1 span, header nav .full { display: none; } }
+</style>
 <script>
-  // 같은 사이트의 녹화본과 레이아웃을 절대 주소로 넘겨 Lichtblick 웹판을 연다.
   // 처음 방문하면 반복 재생 켬·왼쪽 사이드바 닫음(Lichtblick 작업 공간 상태, 이미 있으면 건드리지 않는다)
   try {
     if (!localStorage.getItem("fox.workspace")) {
@@ -12,8 +30,33 @@
     }
   } catch (e) {}
   var base = location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
-  var mcap = base + "data/ps2-demo-261112_160209.mcap";
+  var file = "data/ps2-demo-261112_160209.mcap";
+  // GitHub Pages 는 .mcap 을 gzip 으로 압축해 Range 조각이 깨진다 → 녹화본은 같은 저장소의 raw 주소로 읽는다.
+  // ?data=local 이면(또는 github.io 가 아니면) 같은 사이트의 파일을, ?raw=<owner>/<repo> 면 그 저장소 raw 를 쓴다.
+  var m = location.hostname.match(/^([^.]+)\.github\.io$/), repo = location.pathname.split("/")[1];
+  var useRaw = m && repo && !/[?&]data=local/.test(location.search);
+  var rawOwner = (location.search.match(/[?&]raw=([^&/]+\/[^&/]+)/) || [])[1];
+  var mcap = rawOwner ? "https://raw.githubusercontent.com/" + rawOwner + "/main/" + file
+           : useRaw ? "https://raw.githubusercontent.com/" + m[1] + "/" + repo + "/main/" + file : base + file;
   var layout = base + "layouts/PS2-Demo.json";
-  location.replace(base + "app/?ds=remote-file&ds.url=" + encodeURIComponent(mcap) + "&layoutUrl=" + encodeURIComponent(layout));
+  var app = base + "app/?ds=remote-file&ds.url=" + encodeURIComponent(mcap) + "&layoutUrl=" + encodeURIComponent(layout);
 </script>
-</head><body><p>Lichtblick 을 여는 중… 자동으로 넘어가지 않으면 <a id="go" href="app/">여기</a>를 누르세요.</p></body></html>
+</head>
+<body>
+<header>
+  <a class="logo" href="https://telelian.com" target="_blank" rel="noopener" title="telelian.com">
+    <img src="assets/telelian-logo.png" alt="Telelian">
+  </a>
+  <h1>PS2 demo<span>iToF × Stereo RGB · Lichtblick</span></h1>
+  <nav>
+    <a class="full" id="full" href="app/" target="_blank" rel="noopener">전체 화면으로 열기</a>
+    <a href="https://telelian.com" target="_blank" rel="noopener">telelian.com</a>
+  </nav>
+</header>
+<iframe id="app" title="Lichtblick" allow="fullscreen; autoplay; clipboard-write"></iframe>
+<script>
+  document.getElementById("app").src = app;
+  document.getElementById("full").href = app;
+</script>
+</body>
+</html>
