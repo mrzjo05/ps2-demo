@@ -23,7 +23,7 @@
 
 ## 소스와 라이선스
 
-- **Lichtblick**(MPL-2.0): https://github.com/lichtblick-suite/lichtblick v1.29.1 바탕. 수정본은 https://github.com/mrzjo05/lichtblick 브랜치 `hsb/1.29.1-hsb.3`(c091044d), 여기에 `source/lichtblick-bundled-extensions.patch` 를 더해 `yarn web:build:prod` 로 빌드했다.
+- **Lichtblick**(MPL-2.0): https://github.com/lichtblick-suite/lichtblick v1.29.1 바탕. 수정본은 https://github.com/mrzjo05/lichtblick 브랜치 `hsb/1.29.1-web-demo`(37c01b24 = `hsb/1.29.1-hsb.3` c091044d + `source/lichtblick-bundled-extensions.patch`)이고 `yarn web:build:prod` 로 빌드했다.
   - 더한 것: 사이트에 둔 `.foxe` 를 읽기 전용으로 불러오는 확장 로더, 기본 어두운 테마, Accept-Ranges 를 노출하지 않는 서버(raw.githubusercontent.com)는 1 바이트 Range 요청으로 확인.
   - 라이선스 전문 `LICENSES/lichtblick.MPL-2.0.txt`.
 - **Cloudini Foxglove 변환 확장**: 확장 코드 MIT(`LICENSES/cloudini-foxglove-cloudini-converter.MIT.txt`), 안의 Cloudini 라이브러리 Apache-2.0(`LICENSES/cloudini.Apache-2.0.txt`). 출처 https://github.com/facontidavide/cloudini/releases/tag/1.3.1
