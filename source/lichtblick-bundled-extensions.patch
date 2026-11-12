@@ -1,3 +1,68 @@
+diff --git a/packages/den/video/VideoPlayer.test.ts b/packages/den/video/VideoPlayer.test.ts
+index 04b85616..facbb1b3 100644
+--- a/packages/den/video/VideoPlayer.test.ts
++++ b/packages/den/video/VideoPlayer.test.ts
+@@ -180,7 +180,7 @@ describe("VideoPlayer", () => {
+       { data: new Uint8Array([2]), timestampMicros: 33333, type: "delta" },
+     ]);
+     await Promise.resolve();
+-    await jest.advanceTimersByTimeAsync(10);
++    await jest.advanceTimersByTimeAsync(100);
+     // The reference frame arrives after the deadline; it has no waiter and is dropped.
+     outputFrames.get(0)?.(createFrame(0));
+ 
+@@ -188,6 +188,27 @@ describe("VideoPlayer", () => {
+     await expect(decodePromise).resolves.toEqual<DecodeFramesResult>({ type: "timeout" });
+   });
+ 
++  it("should return the H.264 target frame when the decoder emits it 50 ms after submission", async () => {
++    // Given an H.264-configured player whose decoder emits frames late (as hardware decoders do)
++    const { player, outputFrames } = setup({ trackDecodes: true });
++    await player.init({ codec: "avc1.64001f" });
++
++    // When the target frame is emitted 50 ms after it was submitted
++    const decodePromise = player.decodeFrames([
++      { data: new Uint8Array([1]), timestampMicros: 0, type: "key" },
++    ]);
++    await Promise.resolve();
++    await jest.advanceTimersByTimeAsync(50);
++    const targetFrame = createFrame(0);
++    outputFrames.get(0)?.(targetFrame);
++
++    // Then decodeFrames resolves with that frame instead of timing out
++    await expect(decodePromise).resolves.toEqual<DecodeFramesResult>({
++      type: "target",
++      frame: targetFrame,
++    });
++  });
++
+   it("should not return an intermediate HEVC frame before decode queue drain", async () => {
+     // Given an HEVC-configured player with a tracking decoder
+     const { player, outputFrames } = setup({ trackDecodes: true });
+diff --git a/packages/den/video/VideoPlayer.ts b/packages/den/video/VideoPlayer.ts
+index 0c114bd3..40285c50 100644
+--- a/packages/den/video/VideoPlayer.ts
++++ b/packages/den/video/VideoPlayer.ts
+@@ -12,12 +12,13 @@ import { H265_TARGET_FRAME_WAIT_MS } from "./h265/constants";
+ 
+ // foxglove-depcheck-used: @types/dom-webcodecs
+ 
+-// H.264 typically emits a decoded VideoFrame within a couple of milliseconds of submitting an
+-// EncodedVideoChunk, so a tight 30 ms ceiling lets us return quickly when decoding is healthy and
+-// fail fast when the decoder is stuck. The H.265 budgets live in `./h265/constants.ts` and are
+-// much larger because HEVC decoders may need to consume an entire GOP before emitting the target
+-// frame.
+-const DEFAULT_TARGET_FRAME_WAIT_MS = 10;
++// Software H.264 decoders emit a VideoFrame within a couple of milliseconds, but hardware decoders
++// (e.g. D3D11 in Chrome on Windows) often take tens of milliseconds. A frame that misses this
++// deadline is dropped and the previous frame stays on screen, so the video falls behind the other
++// panels. 100 ms (three frames at 30 Hz) still fails fast when the decoder is stuck. The H.265
++// budgets live in `./h265/constants.ts` and are much larger because HEVC decoders may need to
++// consume an entire GOP before emitting the target frame.
++const DEFAULT_TARGET_FRAME_WAIT_MS = 100;
+ 
+ /** A single chunk of encoded video bitstream representing one frame. */
+ export type EncodedVideoFrame = {
 diff --git a/packages/suite-base/src/util/BrowserHttpReader.ts b/packages/suite-base/src/util/BrowserHttpReader.ts
 index 3ecc9448..4c0aa9e1 100644
 --- a/packages/suite-base/src/util/BrowserHttpReader.ts
@@ -37,7 +102,7 @@ index 3ecc9448..4c0aa9e1 100644
          "Support for HTTP Range requests was not detected on the remote file.\n\nConfirm the resource has an 'Accept-Ranges: bytes' header.";
  
 diff --git a/packages/suite-web/src/WebRoot.tsx b/packages/suite-web/src/WebRoot.tsx
-index 8c176d4f..b66472ad 100644
+index 8c176d4f..4ffd5889 100644
 --- a/packages/suite-web/src/WebRoot.tsx
 +++ b/packages/suite-web/src/WebRoot.tsx
 @@ -27,6 +27,7 @@ import {
@@ -48,7 +113,7 @@ index 8c176d4f..b66472ad 100644
  import LocalStorageAppConfiguration from "./services/LocalStorageAppConfiguration";
  
  const isDevelopment = process.env.NODE_ENV === "development";
-@@ -42,12 +43,16 @@ export function WebRoot(props: {
+@@ -42,12 +43,19 @@ export function WebRoot(props: {
        new LocalStorageAppConfiguration({
          defaults: {
            [AppSetting.SHOW_DEBUG_PANELS]: isDevelopment,
@@ -61,7 +126,10 @@ index 8c176d4f..b66472ad 100644
  
    const defaultExtensionLoaders: IExtensionLoader[] = [
 +    // Extensions served next to the app (extensions/index.json). Absent on normal deployments.
-+    new BundledExtensionLoader("org", new URL("extensions/index.json", globalThis.document.baseURI)),
++    new BundledExtensionLoader(
++      "org",
++      new URL("extensions/index.json", globalThis.document.baseURI),
++    ),
      new IdbExtensionLoader("org"),
      new IdbExtensionLoader("local"),
    ];

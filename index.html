@@ -30,7 +30,7 @@
     }
   } catch (e) {}
   var base = location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
-  var file = "data/ps2-demo-261112_160209.mcap";
+  var file = "data/ps2-demo-261112_160209-sync.mcap";
   // GitHub Pages 는 .mcap 을 gzip 으로 압축해 Range 조각이 깨진다 → 녹화본은 같은 저장소의 raw 주소로 읽는다.
   // ?data=local 이면(또는 github.io 가 아니면) 같은 사이트의 파일을, ?raw=<owner>/<repo> 면 그 저장소 raw 를 쓴다.
   var m = location.hostname.match(/^([^.]+)\.github\.io$/), repo = location.pathname.split("/")[1];
@@ -38,7 +38,7 @@
   var rawOwner = (location.search.match(/[?&]raw=([^&/]+\/[^&/]+)/) || [])[1];
   var mcap = rawOwner ? "https://raw.githubusercontent.com/" + rawOwner + "/main/" + file
            : useRaw ? "https://raw.githubusercontent.com/" + m[1] + "/" + repo + "/main/" + file : base + file;
-  var layout = base + "layouts/PS2-Demo-v2.json";
+  var layout = base + "layouts/PS2-Demo-v3.json";
   var app = base + "app/?ds=remote-file&ds.url=" + encodeURIComponent(mcap) + "&layoutUrl=" + encodeURIComponent(layout);
 </script>
 </head>

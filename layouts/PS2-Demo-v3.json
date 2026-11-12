@@ -296,7 +296,7 @@
   },
   "Image!itof": {
    "imageMode": {
-    "imageTopic": "/itof/depth",
+    "imageTopic": "/itof/depth_sync",
     "rotation": 180,
     "colorMode": "colormap",
     "colorMap": "turbo",
