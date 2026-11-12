@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
 <style>
   :root { --bar: 48px; --bg: #15151a; --fg: #e8e8ee; --dim: #9a9aa8; --line: #2a2a33; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
-    font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif; }
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
   header { height: var(--bar); box-sizing: border-box; display: flex; align-items: center; gap: 16px;
     padding: 0 16px; border-bottom: 1px solid var(--line); }
   header .logo { display: flex; align-items: center; height: 100%; }
@@ -21,7 +21,7 @@
   @media (max-width: 640px) { header h1 span, header nav .full { display: none; } }
 </style>
 <script>
-  // 처음 방문하면 반복 재생 켬·왼쪽 사이드바 닫음(Lichtblick 작업 공간 상태, 이미 있으면 건드리지 않는다)
+  // First visit: turn on loop playback and close the left sidebar (Lichtblick workspace state; left alone if already set)
   try {
     if (!localStorage.getItem("fox.workspace")) {
       localStorage.setItem("fox.workspace", JSON.stringify({ version: 1, state: {
@@ -30,15 +30,15 @@
     }
   } catch (e) {}
   var base = location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
-  var file = "data/ps2-demo-261112_160209-sync.mcap";
-  // GitHub Pages 는 .mcap 을 gzip 으로 압축해 Range 조각이 깨진다 → 녹화본은 같은 저장소의 raw 주소로 읽는다.
-  // ?data=local 이면(또는 github.io 가 아니면) 같은 사이트의 파일을, ?raw=<owner>/<repo> 면 그 저장소 raw 를 쓴다.
+  var file = "data/ps2-demo-261112_160209-en.mcap";
+  // GitHub Pages gzips .mcap and applies Range to the compressed bytes, so the recording is read from raw.githubusercontent.com.
+  // ?data=local (or any host other than github.io) reads the file from this site; ?raw=<owner>/<repo> reads that repository's raw file.
   var m = location.hostname.match(/^([^.]+)\.github\.io$/), repo = location.pathname.split("/")[1];
   var useRaw = m && repo && !/[?&]data=local/.test(location.search);
   var rawOwner = (location.search.match(/[?&]raw=([^&/]+\/[^&/]+)/) || [])[1];
   var mcap = rawOwner ? "https://raw.githubusercontent.com/" + rawOwner + "/main/" + file
            : useRaw ? "https://raw.githubusercontent.com/" + m[1] + "/" + repo + "/main/" + file : base + file;
-  var layout = base + "layouts/PS2-Demo-v3.json";
+  var layout = base + "layouts/PS2-Demo-v4.json";
   var app = base + "app/?ds=remote-file&ds.url=" + encodeURIComponent(mcap) + "&layoutUrl=" + encodeURIComponent(layout);
 </script>
 </head>
@@ -49,7 +49,7 @@
   </a>
   <h1>PS2 demo<span>iToF × Stereo RGB · Lichtblick</span></h1>
   <nav>
-    <a class="full" id="full" href="app/" target="_blank" rel="noopener">전체 화면으로 열기</a>
+    <a class="full" id="full" href="app/" target="_blank" rel="noopener">Open full screen</a>
     <a href="https://telelian.com" target="_blank" rel="noopener">telelian.com</a>
   </nav>
 </header>

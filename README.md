@@ -1,30 +1,30 @@
 # PS2 demo — iToF × stereo RGB (Lichtblick web)
 
-**보기:** https://mrzjo05.github.io/ps2-demo/
+**View:** https://mrzjo05.github.io/ps2-demo/
 
-센서 녹화본(MCAP)을 브라우저의 Lichtblick 에서 재생한다. 설치할 것은 없다.
+Plays a sensor recording (MCAP) in Lichtblick running in the browser. Nothing to install.
 
-- 아래 ▶ 를 누르면 재생한다(반복 재생이 켜져 있다).
-- **라이브** 탭: 스테레오 카메라 두 대(iToF 점을 겹쳐 그림), iToF depth, 공용 PTP 시간축 동기 표, IMU·마이크 그래프, 이벤트.
-- **3D 클라우드** 탭: 스테레오 RGB 점구름과 iToF 점구름(청록)을 한 좌표계에 겹친다. 마우스로 돌리고(왼쪽 드래그) 옮기고(오른쪽 드래그) 확대한다(휠).
-- 마이크 소리는 오디오 패널의 "소리 켜기" 를 눌러야 나온다(브라우저 정책).
-- Chrome·Edge 를 권한다(H.264 를 WebCodecs 로 푼다).
+- Press ▶ at the bottom to play (loop playback is on).
+- **Live** tab: the two stereo cameras, iToF depth, a sync table on the shared PTP timebase, IMU and microphone plots, and events.
+- **3D Cloud** tab: the stereo RGB point cloud and the iToF point cloud (cyan) in one frame. Drag with the left button to rotate, the right button to pan, and scroll to zoom.
+- Microphone audio plays only after you press "Enable sound" in the audio panel (browser policy).
+- Chrome or Edge is recommended (H.264 is decoded with WebCodecs).
 
-## 들어 있는 것
+## Contents
 
-| 경로 | 내용 |
+| Path | What it is |
 |---|---|
-| `index.html` | 입구 — 머리줄(로고·telelian.com 링크) 아래에 `app/` 을 띄우고 녹화본·레이아웃을 넘긴다 |
-| `assets/telelian-logo.png` | 로고 |
-| `app/` | Lichtblick 웹판 빌드 |
-| `app/extensions/` | 시작할 때 읽어 들이는 확장: Cloudini(압축 점구름 풀기), 시연용 패널(동기 표·이벤트·오디오) |
-| `data/` | 녹화본(MCAP, 약 10 초) — 점구름은 Cloudini 5 mm 압축. GitHub Pages 는 이 파일을 gzip 으로 보내 Range 조각이 깨지므로, 앱은 같은 파일을 raw.githubusercontent.com 에서 읽는다. 기록 시각은 노출 시각(센서 stamp)으로 다시 썼다 — 영상·점구름·iToF 가 같은 순간에 같이 바뀐다(iToF depth 는 노출이 가장 가까운 카메라 프레임에 맞춤) |
-| `layouts/PS2-Demo-v3.json` | 화면 배치 |
+| `index.html` | Entry page — a header (logo, telelian.com link) above `app/`, which it opens with the recording and layout |
+| `assets/telelian-logo.png` | Logo |
+| `app/` | Lichtblick web build |
+| `app/extensions/` | Extensions loaded at startup: Cloudini (decompresses point clouds) and the demo panels (sync table, events, audio) |
+| `data/` | Recording (MCAP, about 10 s). Point clouds are Cloudini-compressed at 5 mm. GitHub Pages serves this file gzipped, which breaks Range requests, so the app reads it from raw.githubusercontent.com. Log times were rewritten to the sensor exposure stamps, so video, point clouds and iToF change together for the same instant (iToF depth is paired with the camera frame closest in exposure). |
+| `layouts/PS2-Demo-v4.json` | Panel layout |
 
-## 소스와 라이선스
+## Source and licenses
 
-- **Lichtblick**(MPL-2.0): https://github.com/lichtblick-suite/lichtblick v1.29.1 바탕. 수정본은 https://github.com/mrzjo05/lichtblick 브랜치 `hsb/1.29.1-web-demo`(46a5baed = `hsb/1.29.1-hsb.3` c091044d + `source/lichtblick-bundled-extensions.patch`)이고 `yarn web:build:prod` 로 빌드했다.
-  - 더한 것: 사이트에 둔 `.foxe` 를 읽기 전용으로 불러오는 확장 로더, 기본 어두운 테마, Accept-Ranges 를 노출하지 않는 서버(raw.githubusercontent.com)는 1 바이트 Range 요청으로 확인. H.264 장면을 10 ms 가 아니라 100 ms 까지 기다린다(하드웨어 디코더에서 영상이 뒤처지지 않게).
-  - 라이선스 전문 `LICENSES/lichtblick.MPL-2.0.txt`.
-- **Cloudini Foxglove 변환 확장**: 확장 코드 MIT(`LICENSES/cloudini-foxglove-cloudini-converter.MIT.txt`), 안의 Cloudini 라이브러리 Apache-2.0(`LICENSES/cloudini.Apache-2.0.txt`). 출처 https://github.com/facontidavide/cloudini/releases/tag/1.3.1
-- **시연용 패널 확장(`hsb-panels.foxe`)과 녹화 데이터**: Telelian. 이 시연을 보는 용도로만 공개한다.
+- **Lichtblick** (MPL-2.0): based on https://github.com/lichtblick-suite/lichtblick v1.29.1. The modified source is branch `hsb/1.29.1-web-demo` of https://github.com/mrzjo05/lichtblick (46a5baed = `hsb/1.29.1-hsb.3` c091044d + `source/lichtblick-bundled-extensions.patch`), built with `yarn web:build:prod`.
+  - Changes: a read-only loader for `.foxe` files served next to the app, dark theme by default, a 1-byte Range probe for servers that do not expose Accept-Ranges (raw.githubusercontent.com), and waiting up to 100 ms (instead of 10 ms) for a decoded H.264 frame so video does not fall behind with hardware decoders.
+  - Full license text: `LICENSES/lichtblick.MPL-2.0.txt`.
+- **Cloudini Foxglove converter extension**: extension code MIT (`LICENSES/cloudini-foxglove-cloudini-converter.MIT.txt`), the bundled Cloudini library Apache-2.0 (`LICENSES/cloudini.Apache-2.0.txt`). Source: https://github.com/facontidavide/cloudini/releases/tag/1.3.1
+- **Demo panel extension (`hsb-panels-*.foxe`) and the recording**: Telelian. Published only for viewing this demo.
