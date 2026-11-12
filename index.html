@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PS2 demo</title>
+<script>
+  // 같은 사이트의 녹화본과 레이아웃을 절대 주소로 넘겨 Lichtblick 웹판을 연다.
+  // 처음 방문하면 반복 재생 켬·왼쪽 사이드바 닫음(Lichtblick 작업 공간 상태, 이미 있으면 건드리지 않는다)
+  try {
+    if (!localStorage.getItem("fox.workspace")) {
+      localStorage.setItem("fox.workspace", JSON.stringify({ version: 1, state: {
+        playbackControls: { repeat: true, syncInstances: false },
+        sidebars: { left: { item: "panel-settings", open: false }, right: { open: false } } } }));
+    }
+  } catch (e) {}
+  var base = location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
+  var mcap = base + "data/ps2-demo-261112_160209.mcap";
+  var layout = base + "layouts/PS2-Demo.json";
+  location.replace(base + "app/?ds=remote-file&ds.url=" + encodeURIComponent(mcap) + "&layoutUrl=" + encodeURIComponent(layout));
+</script>
+</head><body><p>Lichtblick 을 여는 중… 자동으로 넘어가지 않으면 <a id="go" href="app/">여기</a>를 누르세요.</p></body></html>
