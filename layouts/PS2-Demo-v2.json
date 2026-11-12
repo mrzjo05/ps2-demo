@@ -70,7 +70,7 @@
    },
    "topics": {
     "/itof/points_sync/cloudini": {
-     "visible": true,
+     "visible": false,
      "pointSize": 3,
      "colorMode": "colormap",
      "colorField": "z",
@@ -86,7 +86,7 @@
    },
    "topics": {
     "/itof/points_sync/cloudini": {
-     "visible": true,
+     "visible": false,
      "pointSize": 3,
      "colorMode": "colormap",
      "colorField": "z",

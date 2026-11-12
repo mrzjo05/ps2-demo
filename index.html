@@ -38,7 +38,7 @@
   var rawOwner = (location.search.match(/[?&]raw=([^&/]+\/[^&/]+)/) || [])[1];
   var mcap = rawOwner ? "https://raw.githubusercontent.com/" + rawOwner + "/main/" + file
            : useRaw ? "https://raw.githubusercontent.com/" + m[1] + "/" + repo + "/main/" + file : base + file;
-  var layout = base + "layouts/PS2-Demo.json";
+  var layout = base + "layouts/PS2-Demo-v2.json";
   var app = base + "app/?ds=remote-file&ds.url=" + encodeURIComponent(mcap) + "&layoutUrl=" + encodeURIComponent(layout);
 </script>
 </head>

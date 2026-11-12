@@ -19,7 +19,7 @@
 | `app/` | Lichtblick 웹판 빌드 |
 | `app/extensions/` | 시작할 때 읽어 들이는 확장: Cloudini(압축 점구름 풀기), 시연용 패널(동기 표·이벤트·오디오) |
 | `data/` | 녹화본(MCAP, 약 10 초) — 점구름은 Cloudini 5 mm 압축. GitHub Pages 는 이 파일을 gzip 으로 보내 Range 조각이 깨지므로, 앱은 같은 파일을 raw.githubusercontent.com 에서 읽는다 |
-| `layouts/PS2-Demo.json` | 화면 배치 |
+| `layouts/PS2-Demo-v2.json` | 화면 배치 |
 
 ## 소스와 라이선스
 
